@@ -1,11 +1,5 @@
 <template>
-  <Stundenplan
-    name="vor Zuname"
-    klasse="5 AHIT"
-    stunden="EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT"
-    datum="6.10.2021"
-    :timeTable="timeTable"
-  />
+  <Stundenplan :timeTableParams="stundenPlanPar" />
 </template>
 
 <script>
@@ -18,13 +12,19 @@ export default {
   },
   data() {
     return {
-      timeTable: [
-        'EH 1: SEW',
-        'EH 2: REL',
-        'EH 3: ITP',
-        'EH 4: Englisch',
-        'EH 5: SYT',
-      ],
+      stundenPlanPar: {
+        name: 'vor Zuname',
+        klasse: '5 AHIT',
+        stunden:
+          'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
+        timeTable: [
+          'EH 1: SEW',
+          'EH 2: REL',
+          'EH 3: ITP',
+          'EH 4: Englisch',
+          'EH 5: SYT',
+        ],
+      },
     };
   },
 };

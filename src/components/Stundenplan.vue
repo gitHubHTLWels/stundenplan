@@ -2,14 +2,14 @@
   <div>
     <div id="header">
       <h1>Stundenplan für:</h1>
-      <h3>{{ name }}</h3>
+      <h3>{{ timeTableParams.name }}</h3>
     </div>
     <div id="block">
-      <h2>Klasse: {{ klasse }}</h2>
-      <h2>Datum: {{ datum }}</h2>
+      <h2>Klasse: {{ timeTableParams.klasse }}</h2>
+      <h2>Datum: {{ timeTableParams.datum }}</h2>
 
       <ul id="array-rendering">
-        <li v-for="(item, index) in timeTable" :key="index">
+        <li v-for="(item, index) in timeTableParams.timeTable" :key="index">
           {{ item }}
         </li>
       </ul>
@@ -25,20 +25,8 @@ import { ref } from 'vue';
 export default {
   name: 'Stundenplan',
   props: {
-    name: {
-      type: String,
-      required: true,
-    },
-    klasse: {
-      type: String,
-      required: true,
-    },
-    timeTable: {
-      type: Array,
-      required: true,
-    },
-    datum: {
-      type: String,
+    timeTableParams: {
+      type: Object,
       required: true,
     },
   },
