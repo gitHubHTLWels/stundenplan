@@ -1,12 +1,8 @@
 <template>
   <div>
-    <div id="header">
-      <h1>Stundenplan für:</h1>
-      <h3>{{ timeTableParams.name }}</h3>
-    </div>
     <div id="block">
       <h2>Klasse: {{ timeTableParams.klasse }}</h2>
-      <h2>Datum: {{ timeTableParams.datum }}</h2>
+      <h2>am {{ timeTableParams.datum }}</h2>
 
       <ul id="array-rendering">
         <li v-for="(item, index) in timeTableParams.timeTable" :key="index">
@@ -48,16 +44,20 @@ function doSplitTimeTable() {
 </script>
 
 <style scoped>
-#header {
+#header,
+#block {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   margin: 0 10px;
 }
 #header h3,
 h1 {
   margin-left: 30px;
+}
+#block h2 {
+  margin-left: 20px;
 }
 #block {
   margin-left: 100px;
