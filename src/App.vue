@@ -1,9 +1,11 @@
 <template>
+  <Header title="Standentafel" :name="stundenPlanPar.name" />
   <Stundenplan :timeTableParams="stundenPlanPar" />
 </template>
 
 <script>
 import Stundenplan from './components/Stundenplan.vue';
+import Header from './components/Header.vue';
 
 export default {
   name: 'App',
