@@ -9,12 +9,14 @@ export default {
   name: 'App',
   components: {
     Stundenplan,
+    Header,
   },
   data() {
     return {
       stundenPlanPar: {
         name: 'vor Zuname',
         klasse: '5 AHIT',
+        datum: new Date().toLocaleDateString(),
         stunden:
           'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
         timeTable: [
