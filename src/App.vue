@@ -2,8 +2,9 @@
   <Stundenplan
     name="vor Zuname"
     klasse="5 AHIT"
-    datum="7.10.2021"
     stunden="EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT"
+    datum="6.10.2021"
+    :timeTable="timeTable"
   />
 </template>
 
@@ -14,6 +15,17 @@ export default {
   name: 'App',
   components: {
     Stundenplan,
+  },
+  data() {
+    return {
+      timeTable: [
+        'EH 1: SEW',
+        'EH 2: REL',
+        'EH 3: ITP',
+        'EH 4: Englisch',
+        'EH 5: SYT',
+      ],
+    };
   },
 };
 </script>

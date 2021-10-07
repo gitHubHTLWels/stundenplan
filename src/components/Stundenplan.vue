@@ -9,7 +9,7 @@
       <h2>Datum: {{ datum }}</h2>
 
       <ul id="array-rendering">
-        <li v-for="(item, index) in doSplitTimeTable()" :key="index">
+        <li v-for="(item, index) in timeTable" :key="index">
           {{ item }}
         </li>
       </ul>
@@ -25,20 +25,34 @@ import { ref } from 'vue';
 export default {
   name: 'Stundenplan',
   props: {
-    name: String,
-    klasse: String,
-    stunden: String,
-    datum: String,
+    name: {
+      type: String,
+      required: true,
+    },
+    klasse: {
+      type: String,
+      required: true,
+    },
+    timeTable: {
+      type: Array,
+      required: true,
+    },
+    datum: {
+      type: String,
+      required: true,
+    },
   },
-  setup(props) {
+  setup() {
     let myArr = ref(['eins', 'zwei']);
 
-    function doSplitTimeTable() {
+    /*
+
+function doSplitTimeTable() {
       let cell = props.stunden.split(',');
       return cell;
     }
+    */
     return {
-      doSplitTimeTable,
       myArr,
     };
   },
