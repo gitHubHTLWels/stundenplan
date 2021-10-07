@@ -6,7 +6,7 @@
 
       <ul id="array-rendering">
         <li v-for="(item, index) in timeTableParams.timeTable" :key="index">
-          {{ item }}
+          {{ item.begin }} {{ item.end }} {{ item.title }}
         </li>
       </ul>
     </div>
