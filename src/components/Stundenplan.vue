@@ -3,12 +3,65 @@
     <div id="block">
       <h2>Klasse: {{ timeTableParams.klasse }}</h2>
       <h2>am {{ timeTableParams.datum }}</h2>
-
-      <ul id="array-rendering">
-        <li v-for="(item, index) in timeTableParams.timeTable" :key="index">
-          {{ item.begin }} {{ item.end }} {{ item.title }}
-        </li>
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <td>Beginn</td>
+            <td>Ende</td>
+            <td>Fach</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in timeTableParams.timeTable" :key="index">
+            <th>{{ item.begin }}</th>
+            <th>{{ item.end }}</th>
+            <th>{{ item.title }}</th>
+            <th class="actions">
+              <button v-on:click="moveSpecUp(index)">&#8593;</button>
+              <button v-on:click="moveSpecDown(index)">&#8595;</button>
+              <button v-on:click="removeSpec(index)">&times;</button>
+            </th>
+            <!-- <tr v-else>
+				<th>{{ item.begin }}</th>
+				<th>{{ item.end }}</th>
+                <th>{{ item.title }}</th>
+				<td class="actions">
+					<button v-on:click="moveSpecUp(index)">&#8593;</button>
+					<button v-on:click="moveSpecDown(index)">&#8595;</button>
+					<button v-on:click="removeSpec(index)">&times;</button>
+				</td> -->
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>
+              <input
+                type="text"
+                v-model="newTableEntry.beginn"
+                autofocus
+                placeholder="Beginn (required)"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                v-model="newTableEntry.ende"
+                placeholder="Ende (required)"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                v-model="newTableEntry.fach"
+                placeholder="Fach (required)"
+              />
+            </td>
+            <td class="actions">
+              <button v-on:click="addUnit">&#43;</button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
 </template>
@@ -26,18 +79,46 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props, { emit }) {
     let myArr = ref(['eins', 'zwei']);
+    let newTableEntry = {
+      beginn: '',
+      ende: '',
+      fach: 'fach',
+    };
 
-    /*
-
-function doSplitTimeTable() {
-      let cell = props.stunden.split(',');
-      return cell;
+    function addUnit(e) {
+      // alert('add me');
+      e.preventDefault();
+      if (newTableEntry.beginn == '') return;
+      emit('addLesson', newTableEntry);
+      // specs.push({
+      //     einheit: this.newSpec.title,
+      //     fach: this.newSpec.value,
+      //   });
+      newTableEntry.fach = '';
+      //title.focus();
     }
-    */
+    function removeItem(index) {
+      //props.timeTableParams.timeTable.splice(index, 1);
+      console.log(index);
+    }
+    function moveItemUp(index) {
+      //his.specs.splice(index - 1, 0, this.specs.splice(index, 1)[0]);
+      console.log(index);
+    }
+    function moveItemDown(index) {
+      //this.specs.splice(index + 1, 0, this.specs.splice(index, 1)[0]);
+      console.log(index);
+    }
+
     return {
       myArr,
+      newTableEntry,
+      addUnit,
+      removeItem,
+      moveItemUp,
+      moveItemDown,
     };
   },
 };
@@ -66,5 +147,29 @@ h1 {
 
 ul {
   list-style: none;
+}
+
+table {
+  border-top: 1px solid #ddd;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+thead td {
+  background-color: #e1e7ee;
+}
+table th,
+td {
+  border-bottom: 1px solid blue;
+  line-height: 1.2;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+table th {
+  background: #f5f7fb;
+  font-size: 0.8em;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 </style>
