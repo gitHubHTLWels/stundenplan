@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       stundenPlanPar: {
-        name: 'vor Zuname',
+        name: 'Karl Renner',
         klasse: '5 AHIT',
         datum: new Date().toLocaleDateString(),
         stunden:
