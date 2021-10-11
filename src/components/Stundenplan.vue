@@ -19,7 +19,7 @@
             <th class="actions">
               <button v-on:click="moveSpecUp(index)">&#8593;</button>
               <button v-on:click="moveSpecDown(index)">&#8595;</button>
-              <button v-on:click="removeSpec(index)">&times;</button>
+              <button v-on:click="remLesson(index)">&times;</button>
             </th>
             <!-- <tr v-else>
 				<th>{{ item.begin }}</th>
@@ -99,9 +99,10 @@ export default {
       newTableEntry.fach = '';
       //title.focus();
     }
-    function removeItem(index) {
+    function remLesson(index) {
       //props.timeTableParams.timeTable.splice(index, 1);
       console.log(index);
+      emit('remLessong', index);
     }
     function moveItemUp(index) {
       //his.specs.splice(index - 1, 0, this.specs.splice(index, 1)[0]);
@@ -116,7 +117,7 @@ export default {
       myArr,
       newTableEntry,
       addUnit,
-      removeItem,
+      remLesson,
       moveItemUp,
       moveItemDown,
     };

@@ -1,6 +1,10 @@
 <template>
   <Header title="Stundentafel" :name="stundenPlanPar.name"></Header>
-  <Stundenplan :timeTableParams="stundenPlanPar" @addLesson="addLesson" />
+  <Stundenplan
+    :timeTableParams="stundenPlanPar"
+    @addLesson="addLesson"
+    @remLesson="removeLesson"
+  />
 </template>
 
 <script>
@@ -37,9 +41,16 @@ export default {
         title: unit.fach,
       });
     }
+
+    function removeLesson(index) {
+      stundenPlanPar.value.timeTable.splice(index, 1);
+      console.log(index);
+    }
+
     return {
       stundenPlanPar,
       addLesson,
+      removeLesson,
     };
   },
   /*   data() {
