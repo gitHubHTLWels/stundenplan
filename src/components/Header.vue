@@ -1,10 +1,19 @@
 
 
 <template>
-  <div id="header">
-    <img src="../assets/htlwels.png" />
-    <h1>{{ title }}</h1>
-    <h1>für {{ name }}</h1>
+  <div>
+    <div id="header">
+      <img src="../assets/htlwels.png" />
+      <h1>{{ title }}</h1>
+      <h2>für {{ name }}</h2>
+    </div>
+    <div id="info">
+      <h3>Anzahl der Einheiten: {{ units }}</h3>
+    </div>
+    <div id="error" v-if="errorMessage.length">
+      <h3>Fehlermeldung:</h3>
+      {{ errorMessage }}
+    </div>
   </div>
 </template>
 
@@ -19,11 +28,27 @@ export default {
       type: String,
       required: true,
     },
+    units: {
+      type: Number,
+      required: true,
+    },
+    errorMessage: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
 };
 </script>
 
 <style scoped>
+#error {
+  color: red;
+}
+#error h3 {
+  margin: 0;
+  color: black;
+}
 #header {
   display: flex;
   flex-wrap: wrap;
@@ -31,7 +56,10 @@ export default {
   align-items: center;
   margin: 0 10px;
 }
-#header h1 {
+#header h2 {
   margin-left: 30px;
+}
+#info {
+  float: right;
 }
 </style>

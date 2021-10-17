@@ -1,5 +1,10 @@
 <template>
-  <Header title="Stundentafel" :name="stundenPlanPar.name"></Header>
+  <Header
+    title="Stundentafel"
+    :name="stundenPlanPar.name"
+    :units="stundenPlanPar.timeTable.length"
+    :errorMessage="errorMess"
+  ></Header>
   <Stundenplan
     :timeTableParams="stundenPlanPar"
     @addLesson="addLesson"
@@ -21,6 +26,7 @@ export default {
     Header,
   },
   setup() {
+    let errorMess = ref('');
     let stundenPlanPar = ref({
       name: 'Sepp Reischl',
       klasse: '5 AHIT',
@@ -36,12 +42,22 @@ export default {
       ],
     });
     function addLesson(unit) {
-      console.log(' unit recieved:', unit.fach);
+      //console.log(' unit recieved:', unit.fach + 'type: ' + typeof(unit.begin))
+      let res = stundenPlanPar.value.timeTable.filter((entry) => {
+        return entry.begin === unit.begin;
+      });
+      console.log(' len: ' + res.length);
+      if (res.length) {
+        errorMess.value = 'Beginn-Zeit darf sich nicht überlappen';
+        return;
+      }
+      console.log('entry: ' + res);
       stundenPlanPar.value.timeTable.push({
-        begin: unit.beginn,
-        end: unit.ende,
+        begin: unit.begin,
+        end: unit.end,
         title: unit.fach,
       });
+      errorMess.value = '';
     }
 
     function removeLesson(index) {
@@ -73,6 +89,7 @@ export default {
 
     return {
       stundenPlanPar,
+      errorMess,
       addLesson,
       removeLesson,
       moveLessonDown,

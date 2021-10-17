@@ -23,11 +23,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in timeTableParams.timeTable" :key="index">
-            <th>{{ item.begin }}</th>
-            <th>{{ item.end }}</th>
-            <th>{{ item.title }}</th>
-            <th v-if="optionShowTeaher">{{ item.lehrer }}</th>
+          <tr
+            @mouseover="handleMouseOver"
+            v-for="(item, index) in timeTableParams.timeTable"
+            :key="index"
+          >
+            <td>{{ item.begin }}</td>
+            <td>{{ item.end }}</td>
+            <td>{{ item.title }}</td>
+            <td v-if="optionShowTeaher">{{ item.lehrer }}</td>
             <th class="actions">
               <button v-on:click="moveLessonUp(index)">&#8593;</button>
               <button v-on:click="moveLessonDown(index)">&#8595;</button>
@@ -40,7 +44,7 @@
             <td>
               <input
                 type="text"
-                v-model="newTableEntry.beginn"
+                v-model="newTableEntry.begin"
                 autofocus
                 placeholder="Beginn (required)"
               />
@@ -48,14 +52,14 @@
             <td>
               <input
                 type="text"
-                v-model="newTableEntry.ende"
+                v-model="newTableEntry.end"
                 placeholder="Ende (required)"
               />
             </td>
             <td>
               <input
                 type="text"
-                v-model="newTableEntry.fach"
+                v-model="newTableEntry.title"
                 placeholder="Fach (required)"
               />
             </td>
@@ -91,20 +95,20 @@ export default {
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props, context) {
     let optionShowTeaher = ref(false);
     let newTableEntry = {
-      beginn: '',
-      ende: '',
-      fach: 'fach',
+      begin: '',
+      end: '',
+      title: 'fach',
       teacher: '',
     };
 
     function addUnit(e) {
       // alert('add me');
       e.preventDefault();
-      if (newTableEntry.beginn == '') return;
-      emit('addLesson', newTableEntry);
+      if (newTableEntry.begin == '') return;
+      context.emit('addLesson', newTableEntry);
       // specs.push({
       //     einheit: this.newSpec.title,
       //     fach: this.newSpec.value,
@@ -115,17 +119,21 @@ export default {
     function remLesson(index) {
       //props.timeTableParams.timeTable.splice(index, 1);
       console.log(index);
-      emit('remLesson', index);
+      context.emit('remLesson', index);
     }
     function moveLessonUp(index) {
       //his.specs.splice(index - 1, 0, this.specs.splice(index, 1)[0]);
-      emit('moveLessonUp', index);
+      context.emit('moveLessonUp', index);
       console.log(index);
     }
     function moveLessonDown(index) {
       //this.specs.splice(index + 1, 0, this.specs.splice(index, 1)[0]);
-      emit('moveLessonDown', index);
+      context.emit('moveLessonDown', index);
       console.log(index);
+    }
+
+    function handleMouseOver(index) {
+      console.log('mous over ' + index);
     }
 
     return {
@@ -135,6 +143,7 @@ export default {
       remLesson,
       moveLessonUp,
       moveLessonDown,
+      handleMouseOver,
     };
   },
 };
@@ -149,6 +158,9 @@ export default {
   justify-content: left;
   align-items: baseline;
   margin: 0 10px;
+}
+#optionBlock {
+  margin-top: 40px;
 }
 #header h3,
 h1 {
@@ -175,6 +187,7 @@ table {
   border-spacing: 0;
   width: 100%;
 }
+/* 
 thead td {
   background-color: #e1e7ee;
 }
@@ -191,5 +204,5 @@ table th {
   font-size: 0.8em;
   letter-spacing: 1px;
   text-transform: uppercase;
-}
+} */
 </style>
