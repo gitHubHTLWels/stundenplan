@@ -1,14 +1,25 @@
 <template>
   <div>
-    <div id="block">
+    <div id="optionBlock">
+      <h2>Optionen:</h2>
+      <div class="item">
+        <input v-model="optionShowTeaher" type="checkbox" id="showTeacher" />
+        <label for="showTeacher">Anzeige Lehrer</label>
+      </div>
+    </div>
+
+    <div class="block">
       <h2>Klasse: {{ timeTableParams.klasse }}</h2>
       <h2>am {{ timeTableParams.datum }}</h2>
+
       <table>
         <thead>
           <tr>
             <td>Beginn</td>
             <td>Ende</td>
             <td>Fach</td>
+            <td v-if="optionShowTeaher">Lehrer</td>
+            <td>Modifikationen</td>
           </tr>
         </thead>
         <tbody>
@@ -16,20 +27,12 @@
             <th>{{ item.begin }}</th>
             <th>{{ item.end }}</th>
             <th>{{ item.title }}</th>
+            <th v-if="optionShowTeaher">{{ item.lehrer }}</th>
             <th class="actions">
-              <button v-on:click="moveSpecUp(index)">&#8593;</button>
-              <button v-on:click="moveSpecDown(index)">&#8595;</button>
+              <button v-on:click="moveLessonUp(index)">&#8593;</button>
+              <button v-on:click="moveLessonDown(index)">&#8595;</button>
               <button v-on:click="remLesson(index)">&times;</button>
             </th>
-            <!-- <tr v-else>
-				<th>{{ item.begin }}</th>
-				<th>{{ item.end }}</th>
-                <th>{{ item.title }}</th>
-				<td class="actions">
-					<button v-on:click="moveSpecUp(index)">&#8593;</button>
-					<button v-on:click="moveSpecDown(index)">&#8595;</button>
-					<button v-on:click="removeSpec(index)">&times;</button>
-				</td> -->
           </tr>
         </tbody>
         <tfoot>
@@ -56,6 +59,15 @@
                 placeholder="Fach (required)"
               />
             </td>
+            <template v-if="optionShowTeaher">
+              <td>
+                <input
+                  type="text"
+                  v-model="newTableEntry.teacher"
+                  placeholder="Lehrer (required)"
+                />
+              </td>
+            </template>
             <td class="actions">
               <button v-on:click="addUnit">&#43;</button>
             </td>
@@ -80,11 +92,12 @@ export default {
     },
   },
   setup(props, { emit }) {
-    let myArr = ref(['eins', 'zwei']);
+    let optionShowTeaher = ref(false);
     let newTableEntry = {
       beginn: '',
       ende: '',
       fach: 'fach',
+      teacher: '',
     };
 
     function addUnit(e) {
@@ -102,24 +115,26 @@ export default {
     function remLesson(index) {
       //props.timeTableParams.timeTable.splice(index, 1);
       console.log(index);
-      emit('remLessong', index);
+      emit('remLesson', index);
     }
-    function moveItemUp(index) {
+    function moveLessonUp(index) {
       //his.specs.splice(index - 1, 0, this.specs.splice(index, 1)[0]);
+      emit('moveLessonUp', index);
       console.log(index);
     }
-    function moveItemDown(index) {
+    function moveLessonDown(index) {
       //this.specs.splice(index + 1, 0, this.specs.splice(index, 1)[0]);
+      emit('moveLessonDown', index);
       console.log(index);
     }
 
     return {
-      myArr,
+      optionShowTeaher,
       newTableEntry,
       addUnit,
       remLesson,
-      moveItemUp,
-      moveItemDown,
+      moveLessonUp,
+      moveLessonDown,
     };
   },
 };
@@ -127,23 +142,27 @@ export default {
 
 <style scoped>
 #header,
-#block {
+#optionBlock,
+.block {
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
-  align-items: center;
+  align-items: baseline;
   margin: 0 10px;
 }
 #header h3,
 h1 {
   margin-left: 30px;
 }
-#block h2 {
+.block h2 {
   margin-left: 20px;
 }
-#block {
+.block {
   margin-left: 100px;
   margin-top: 30px;
+}
+#optionBlock .item {
+  margin-left: 10px;
 }
 
 ul {
