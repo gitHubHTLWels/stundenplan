@@ -34,29 +34,86 @@ export default {
       stunden:
         'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
       timeTable: [
-        { begin: '8:50', end: '9:35', title: 'SEW', lehrer: 'HELT' },
-        { begin: '9:40', end: '10:30', title: 'Reli', lehrer: 'BARE' },
-        { begin: '10:45', end: '11:35', title: 'ITP', lehrer: 'GAMS' },
-        { begin: '11:40', end: '12:30', title: 'English', lehrer: 'KENN' },
-        { begin: '12:35', end: '13:25', title: 'SYT', lehrer: 'REFR' },
+        { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
+        { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
+        { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
+        { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
+        { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
       ],
     });
+
+    function isTime(field, eMessage) {
+      let time = field.split(':');
+
+      console.log('isTime:: ' + time[0] + ', ' + time[1]);
+      console.log(Number.isInteger(time[0]));
+
+      if (isNaN(parseInt(time[0], 10))) {
+        errorMess.value = eMessage;
+        return false;
+      }
+      if (isNaN(parseInt(time[1], 10))) {
+        errorMess.value = eMessage;
+        return false;
+      }
+      return true;
+    }
+
+    function isFieldEmpty(field, eMessage) {
+      if (field == '') {
+        errorMess.value = eMessage;
+        return false;
+      }
+      return true;
+    }
+    function unitCheckForEmptyEntries(entry) {
+      if (
+        !isFieldEmpty(entry.begin, "Die 'Beginn-Zeit' muss festgelegt werden. ")
+      )
+        return false;
+      if (
+        !isTime(
+          entry.begin,
+          'Die Beginn-Zeit <' +
+            entry.begin +
+            '>  hat ein falsches Format (hh::mm)'
+        )
+      )
+        return false;
+
+      if (!isFieldEmpty(entry.end, "Die 'Ende-Zeit' muss festgelegt werden. "))
+        return false;
+      if (
+        !isTime(
+          entry.end,
+          'Die Ende-Zeit <' + entry.end + '>  hat ein falsches Format (hh::mm)'
+        )
+      )
+        return false;
+
+      if (!isFieldEmpty(entry.title, "Das 'Fach' muss festgelegt werden. "))
+        return false;
+      return true;
+    }
+
     function addLesson(unit) {
-      //console.log(' unit recieved:', unit.fach + 'type: ' + typeof(unit.begin))
+      errorMess.value = '';
+      if (!unitCheckForEmptyEntries(unit)) return;
+
       let res = stundenPlanPar.value.timeTable.filter((entry) => {
-        return entry.begin === unit.begin;
+        let retV = unit.begin === '' || entry.begin === unit.begin;
+        return retV;
       });
-      console.log(' len: ' + res.length);
       if (res.length) {
         errorMess.value = 'Beginn-Zeit darf sich nicht überlappen';
         return;
       }
-      console.log('entry: ' + res);
-      stundenPlanPar.value.timeTable.push({
-        begin: unit.begin,
-        end: unit.end,
-        title: unit.fach,
-      });
+      //console.log('entry: ' + res);
+      let clonedObj = { ...unit };
+      unit.begin = '';
+      unit.end = '';
+      unit.title = '';
+      stundenPlanPar.value.timeTable.push(clonedObj);
       errorMess.value = '';
     }
 

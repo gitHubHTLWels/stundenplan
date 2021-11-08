@@ -44,6 +44,9 @@ export default {
 <style scoped>
 #error {
   color: red;
+  margin-left: 30%;
+  margin-right: 30%;
+  margin-top: 40px;
 }
 #error h3 {
   margin: 0;
@@ -61,5 +64,6 @@ export default {
 }
 #info {
   float: right;
+  margin-right: 100px;
 }
 </style>

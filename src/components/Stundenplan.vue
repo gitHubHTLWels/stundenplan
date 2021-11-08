@@ -105,31 +105,21 @@ export default {
     };
 
     function addUnit(e) {
-      // alert('add me');
       e.preventDefault();
-      if (newTableEntry.begin == '') return;
+      console.log('Stundenplan::addUnit()');
       context.emit('addLesson', newTableEntry);
-      // specs.push({
-      //     einheit: this.newSpec.title,
-      //     fach: this.newSpec.value,
-      //   });
-      newTableEntry.fach = '';
-      //title.focus();
     }
     function remLesson(index) {
-      //props.timeTableParams.timeTable.splice(index, 1);
-      console.log(index);
+      console.log('Stundenplan::remLesson(' + index + ')');
       context.emit('remLesson', index);
     }
     function moveLessonUp(index) {
-      //his.specs.splice(index - 1, 0, this.specs.splice(index, 1)[0]);
+      console.log('Stundenplan::moveLessonUp(' + index + ')');
       context.emit('moveLessonUp', index);
-      console.log(index);
     }
     function moveLessonDown(index) {
-      //this.specs.splice(index + 1, 0, this.specs.splice(index, 1)[0]);
+      console.log('Stundenplan::moveLessonDown(' + index + ')');
       context.emit('moveLessonDown', index);
-      console.log(index);
     }
 
     function handleMouseOver(index) {
@@ -187,7 +177,7 @@ table {
   border-spacing: 0;
   width: 100%;
 }
-/* 
+
 thead td {
   background-color: #e1e7ee;
 }
@@ -204,5 +194,5 @@ table th {
   font-size: 0.8em;
   letter-spacing: 1px;
   text-transform: uppercase;
-} */
+}
 </style>
