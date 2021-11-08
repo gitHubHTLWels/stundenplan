@@ -3,7 +3,7 @@
     <div id="optionBlock">
       <h2>Optionen:</h2>
       <div class="item">
-        <input v-model="optionShowTeaher" type="checkbox" id="showTeacher" />
+        <input v-model="optionsShowTeacher" type="checkbox" id="showTeacher" />
         <label for="showTeacher">Anzeige Lehrer</label>
       </div>
     </div>
@@ -18,7 +18,7 @@
             <td>Beginn</td>
             <td>Ende</td>
             <td>Fach</td>
-            <td v-if="optionShowTeaher">Lehrer</td>
+            <td v-if="optionShowTeacher">Lehrer</td>
             <td>Modifikationen</td>
           </tr>
         </thead>
@@ -31,7 +31,7 @@
             <td>{{ item.begin }}</td>
             <td>{{ item.end }}</td>
             <td>{{ item.title }}</td>
-            <td v-if="optionShowTeaher">{{ item.lehrer }}</td>
+            <td v-if="optionsShowTeacher">{{ item.teacher }}</td>
             <th class="actions">
               <button v-on:click="moveLessonUp(index)">&#8593;</button>
               <button v-on:click="moveLessonDown(index)">&#8595;</button>
@@ -63,7 +63,7 @@
                 placeholder="Fach (required)"
               />
             </td>
-            <template v-if="optionShowTeaher">
+            <template v-if="optionsShowTeacher">
               <td>
                 <input
                   type="text"
@@ -96,7 +96,7 @@ export default {
     },
   },
   setup(props, context) {
-    let optionShowTeaher = ref(false);
+    let optionsShowTeacher = ref(false);
     let newTableEntry = {
       begin: '',
       end: '',
@@ -127,7 +127,7 @@ export default {
     }
 
     return {
-      optionShowTeaher,
+      optionsShowTeacher,
       newTableEntry,
       addUnit,
       remLesson,
