@@ -20,7 +20,7 @@ import Header from './components/Header.vue';
 import { ref } from 'vue';
 
 export default {
-  name: 'App',
+  name: 'ParentComponent',
   components: {
     Stundenplan,
     Header,
@@ -42,15 +42,33 @@ export default {
       ],
     });
 
-    function isTime(field, eMessage) {
-      let time = field.split(':');
+    /*                     ERROR HANDLING          BEGIN         */
 
-      if (isNaN(parseInt(time[0], 10))) {
+    // pattern: 13:20 || 7:13 ... hh.mm;
+    /*
+      field: text-field to check 
+      eMessage: ErrorMessage if found input value does not correspond with time format hh::mm
+      eMessageTimeDomain: found time is out of range (<7,>17, > 60)
+
+    */
+    function isTime(field, eMessage, eMessageTimeDomain) {
+      let time = field.split(':');
+      let number = parseInt(time[0], 10); // hours
+      if (isNaN(number)) {
         errorMess.value = eMessage;
         return false;
       }
-      if (isNaN(parseInt(time[1], 10))) {
+      if (number < 7 || number > 17) {
+        errorMess.value = eMessageTimeDomain.replace('%d', number);
+        return false;
+      }
+      number = parseInt(time[1], 10); // hours
+      if (isNaN(number, 10)) {
         errorMess.value = eMessage;
+        return false;
+      }
+      if (number < 0 || number > 60) {
+        errorMess.value = eMessageTimeDomain.replace('%d', number);
         return false;
       }
       return true;
@@ -63,7 +81,10 @@ export default {
       }
       return true;
     }
+
     function unitCheckForEmptyEntries(entry) {
+      let validTimeErrMessage =
+        'Die gewählte Zeit "%d" liegt ausserhalb des Gültigkeitsbereichs (7:00..17:59)';
       if (
         !isFieldEmpty(entry.begin, "Die 'Beginn-Zeit' muss festgelegt werden. ")
       )
@@ -71,9 +92,8 @@ export default {
       if (
         !isTime(
           entry.begin,
-          'Die Beginn-Zeit <' +
-            entry.begin +
-            '>  hat ein falsches Format (hh::mm)'
+          `Die Beginn-Zeit <${entry.begin}>  hat ein falsches Format (hh::mm)`,
+          validTimeErrMessage
         )
       )
         return false;
@@ -83,7 +103,8 @@ export default {
       if (
         !isTime(
           entry.end,
-          'Die Ende-Zeit <' + entry.end + '>  hat ein falsches Format (hh::mm)'
+          `Die Ende-Zeit <${entry.end}>  hat ein falsches Format (hh::mm)`,
+          validTimeErrMessage
         )
       )
         return false;
@@ -93,15 +114,17 @@ export default {
       return true;
     }
 
+    /*                     ERROR HANDLING          END (addLesson)         */
+
     function addLesson(unit) {
       errorMess.value = '';
       if (!unitCheckForEmptyEntries(unit)) return;
 
-      let res = stundenPlanPar.value.timeTable.filter((entry) => {
-        let retV = unit.begin === '' || entry.begin === unit.begin;
+      let overlapping = stundenPlanPar.value.timeTable.filter((entry) => {
+        let retV = entry.begin === unit.begin;
         return retV;
       });
-      if (res.length) {
+      if (overlapping.length) {
         errorMess.value = 'Beginn-Zeit darf sich nicht überlappen';
         return;
       }
@@ -150,7 +173,6 @@ export default {
       moveLessonUp,
     };
   },
- 
 };
 </script>
 
