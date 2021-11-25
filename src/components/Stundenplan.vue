@@ -43,10 +43,12 @@
           <tr>
             <td>
               <input
+                name="lessonBegin"
                 type="text"
                 v-model="newTableEntry.begin"
                 autofocus
                 placeholder="Beginn (required)"
+                @blur="checkValue"
               />
             </td>
             <td>
@@ -86,6 +88,7 @@
 
 <script>
 import { ref } from 'vue';
+//import { Field, ErrorMessage } from 'vee-validate';
 
 export default {
   name: 'Stundenplan',
@@ -95,6 +98,7 @@ export default {
       required: true,
     },
   },
+  components: {},
   setup(props, context) {
     let optionsShowTeacher = ref(false);
     let newTableEntry = {
@@ -103,6 +107,15 @@ export default {
       title: 'fach',
       teacher: '',
     };
+    /* VALIdation */
+
+    function isTimeValid(value) {
+      console.log('isTimeValid ..');
+      if (!value) return 'Eingabe kann nicht leer sein';
+    }
+    function checkValue(e) {
+      console.log('on BLur' + e.target.value);
+    }
 
     function addUnit(e) {
       e.preventDefault();
@@ -134,6 +147,8 @@ export default {
       moveLessonUp,
       moveLessonDown,
       handleMouseOver,
+      isTimeValid,
+      checkValue,
     };
   },
 };

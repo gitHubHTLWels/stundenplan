@@ -6,17 +6,20 @@
     :errorMessage="errorMess"
   ></Header>
   <Stundenplan
+    v-if="loginStatus == true"
     :timeTableParams="stundenPlanPar"
     @addLesson="addLesson"
     @remLesson="removeLesson"
     @moveLessonDown="moveLessonDown"
     @moveLessonUp="moveLessonUp"
   />
+  <Login v-else @loginDone="loginDone" />
 </template>
 
 <script>
 import Stundenplan from './components/Stundenplan.vue';
 import Header from './components/Header.vue';
+import Login from './components/Login.vue';
 import { ref } from 'vue';
 
 export default {
@@ -24,11 +27,13 @@ export default {
   components: {
     Stundenplan,
     Header,
+    Login,
   },
   setup() {
     let errorMess = ref('');
+    let loginStatus = ref(false);
     let stundenPlanPar = ref({
-      name: 'Sepp Reischl',
+      name: '',
       klasse: '5 AHIT',
       datum: new Date().toLocaleDateString(),
       stunden:
@@ -41,6 +46,12 @@ export default {
         { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
       ],
     });
+
+    function loginDone(email) {
+      loginStatus.value = true;
+      stundenPlanPar.value.name = email;
+      console.log('loginDone ---');
+    }
 
     /*                     ERROR HANDLING          BEGIN         */
 
@@ -171,6 +182,8 @@ export default {
       removeLesson,
       moveLessonDown,
       moveLessonUp,
+      loginDone,
+      loginStatus,
     };
   },
 };

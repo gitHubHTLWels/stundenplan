@@ -7,9 +7,9 @@
       <h1>{{ title }}</h1>
       <h2>für {{ name }}</h2>
     </div>
-    <div id="info">
+    <!-- <div id="info">
       <h3>Anzahl der Einheiten: {{ units }}</h3>
-    </div>
+    </div> -->
     <div id="error" v-if="errorMessage.length">
       <h3>Fehlermeldung:</h3>
       {{ errorMessage }}
@@ -58,6 +58,7 @@ export default {
   justify-content: center;
   align-items: center;
   margin: 0 10px;
+  margin-bottom: 10px;
 }
 #header h2 {
   margin-left: 30px;
