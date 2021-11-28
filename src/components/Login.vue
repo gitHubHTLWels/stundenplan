@@ -14,12 +14,12 @@
         <Field
           name="email"
           type="email"
-          v-model="email"
+          v-model="authorize.email"
           placeholder="User"
           :rules="validateEmail"
         />
       </div>
-      <ErrorMessage name="email" />
+      <ErrorMessage name="authorize.email" />
       <div class="form-element">
         <font-awesome-icon
           :icon="['fas', 'lock']"
@@ -30,7 +30,7 @@
         <Field
           name="password"
           type="password"
-          v-model="password"
+          v-model="authorize.password"
           placeholder="Password"
           :rules="validatePassword"
         />
@@ -64,16 +64,16 @@ export default {
     //   name: '',
     //   password: '',
     // });
-    let email = ref('');
-    let password = ref('');
+
+    let authorize = ref({
+      email: '',
+      password: '',
+    });
 
     function processLogin(values) {
       console.log('CLICK' + values);
-      const headers = { 'Content-Type': 'application/json' };
-      fetch('http://localhost:3000/passwd?name=name?password=passw', { headers })
-        .then((response) => response.json())
-        .then((data) => console.log(data));
-      context.emit('loginDone', email);
+
+      context.emit('loginDone', authorize.value);
     }
     function validateEmail(value) {
       if (!value) return 'Field cannot be empty';
@@ -92,8 +92,7 @@ export default {
     }
 
     return {
-      email,
-      password,
+      authorize,
       validateEmail,
       validatePassword,
       processLogin,

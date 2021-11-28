@@ -21,6 +21,9 @@ import Stundenplan from './components/Stundenplan.vue';
 import Header from './components/Header.vue';
 import Login from './components/Login.vue';
 import { ref } from 'vue';
+const util = require('util');
+
+const URL = 'localhost:3000';
 
 export default {
   name: 'ParentComponent',
@@ -47,9 +50,29 @@ export default {
       ],
     });
 
-    function loginDone(email) {
-      loginStatus.value = true;
-      stundenPlanPar.value.name = email;
+    function loginDone(authorizeObject) {
+      stundenPlanPar.value.name = authorizeObject.email;
+
+      console.log(util.inspect(authorizeObject));
+
+      console.log('Authorized obj: ' + authorizeObject.password);
+
+      /*
+    REturn json object:
+       userExist:true,
+			 allowed:true
+
+*/
+      //const headers = { 'Content-Type': 'application/json' };
+      let url = `http://${URL}/?email=${authorizeObject.email}&password=${authorizeObject.password}`;
+      fetch(url /*, { headers }*/)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.userExist && data.allowed) loginStatus.value = true;
+          //loginStatus = true;
+          console.log(data);
+        });
+
       console.log('loginDone ---');
     }
 

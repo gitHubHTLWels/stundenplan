@@ -7,16 +7,19 @@ const HOSTNAME = '127.0.0.1';
 const PORT = 3000;
 const PASSWDFILE = './secret/passwords.asc'
 const url = require('url');
+const util = require('util');
 
 let passwordsAvailable = [{}]
 
 
 http.createServer((req, res) => {   //create web server
     const queryObject = url.parse(req.url, true).query;
-		  res.setHeader('Access-Control-Allow-Origin', '*');
-res.setHeader('Access-Control-Request-Method', '*');
-res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-res.setHeader('Access-Control-Allow-Headers', '*');
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+
     if (req.url == '/') { //check the URL of the current request
 
         // set response header
@@ -34,14 +37,35 @@ res.setHeader('Access-Control-Allow-Headers', '*');
         res.end();
 
     } else if (req.url = "passwd") {
+        /* Structure of queryObject:
+            email: '',
+           password: '',
+        */
+        let requestData = JSON.stringify(queryObject)
+        let jsonRet = {
+            userExist: true,
+            allowed: true
+        }
+        /*         if (queryObject.email != "mainName@gmail.com")
+                    jsonRet.userExist = false;
+                if (queryObject.password != 'dortmund')
+                    jsonRet.allowed = false
+         */
 
-        console.log("passwd: " + req.query + ", queryObj: " + JSON.stringify(queryObject));
-       res.writeHead(200, {"Content-Type": "application/json"}); 
-				let jsonRet = {
-						  allowed:true
-				}
-				res.end(JSON.stringify(jsonRet));
+        let result = this.passwordsAvailable.find(item => {
+            console.log('item:' + item.name)
+            return item.name == queryObject.email
+        })
+        //console.log("Result " + result)
+        if (result) {
+            if (result.password != queryObject.password)
+                jsonRet.allowed = false
+        } else {
+            jsonRet.userExist = false
+            jsonRet.allowed = false
+        }
 
+        res.end(JSON.stringify(jsonRet));
     }
     else
         res.end('Invalid Request!');
@@ -52,8 +76,11 @@ res.setHeader('Access-Control-Allow-Headers', '*');
         if (err) {
             console.log('Cannot read password-file due to: ' + err)
         } else {
-            passwordsAvailable = data
-            console.log("pass: " + passwordsAvailable)
+            this.passwordsAvailable = JSON.parse(data)
+            //console.log("pass: " + passwordsAvailable)
+            this.passwordsAvailable.map(item => console.log(item))
+
+            //console.log(util.inspect(passwordsAvailable));
 
         }
     })
