@@ -71,6 +71,9 @@ export default {
           if (data.userExist && data.allowed) loginStatus.value = true;
           //loginStatus = true;
           console.log(data);
+        })
+        .catch((err) => {
+          console.log('Error occured ...' + err);
         });
 
       console.log('loginDone ---');
