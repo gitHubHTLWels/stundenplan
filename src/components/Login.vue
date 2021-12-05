@@ -17,9 +17,16 @@
           v-model="authorize.email"
           placeholder="User"
           :rules="validateEmail"
+          autofocus
         />
       </div>
-      <ErrorMessage name="authorize.email" />
+      <ErrorMessage name="email" />
+      <span
+        role="alert"
+        v-if="errorMessage.length && errorMessage.startsWith('User')"
+      >
+        {{ errorMessage }}
+      </span>
       <div class="form-element">
         <font-awesome-icon
           :icon="['fas', 'lock']"
@@ -36,6 +43,12 @@
         />
       </div>
       <ErrorMessage name="password" />
+      <span
+        role="alert"
+        v-if="errorMessage.length && errorMessage.startsWith('Password')"
+      >
+        {{ errorMessage }}
+      </span>
       <div class="form-password">
         <a href="">Passwort vergessen ?</a>
       </div>
@@ -54,6 +67,12 @@ import { ref } from 'vue';
 import { Form, Field, ErrorMessage } from 'vee-validate';
 
 export default {
+  props: {
+    serverURL: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     Form,
     Field,
@@ -69,12 +88,58 @@ export default {
       email: '',
       password: '',
     });
+    let errorMessage = ref('');
 
-    function processLogin(values) {
-      console.log('CLICK' + values);
-
-      context.emit('loginDone', authorize.value);
+    function processLogin() {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: authorize.value.email,
+          password: authorize.value.password,
+        }),
+      };
+      console.log('Fetching data ... ' + props.serverURL);
+      fetch(props.serverURL, requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.userExist == false) {
+            errorMessage.value = `User: ${authorize.value.email} not found!`;
+          } else if (data.allowed == false) {
+            errorMessage.value = 'Password: Wrong password!';
+          } else {
+            context.emit('loginDone', authorize.value);
+            console.log(data);
+          }
+        })
+        .catch((err) => {
+          console.log('Error occured ...' + err);
+          errorMessage.value =
+            'Communication error occured in processing authority';
+        });
     }
+
+    // function processLogin(values) {
+    //   let url = `http://${props.serverURL}?email=${authorize.value.email}&password=${authorize.value.password}`;
+    //   fetch(url /*, { headers }*/)
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       if (data.userExist == false) {
+    //         errorMessage.value = `User: ${authorize.value.email} not found!`;
+    //       } else if (data.allowed == false) {
+    //         errorMessage.value = 'Password: Wrong password!';
+    //       } else {
+    //         context.emit('loginDone', authorize.value);
+    //       }
+    //       console.log(data);
+    //     })
+    //     .catch((err) => {
+    //       console.log('Error occured ...' + err);
+    //       errorMessage.value =
+    //         'Communication error occured in processing authority';
+    //     });
+    // }
+
     function validateEmail(value) {
       if (!value) return 'Field cannot be empty';
       const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
@@ -96,6 +161,7 @@ export default {
       validateEmail,
       validatePassword,
       processLogin,
+      errorMessage,
     };
   },
 };

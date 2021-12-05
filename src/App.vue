@@ -13,7 +13,11 @@
     @moveLessonDown="moveLessonDown"
     @moveLessonUp="moveLessonUp"
   />
-  <Login v-else @loginDone="loginDone" />
+  <Login
+    v-else
+    @loginDone="loginDone"
+    serverURL="http://localhost:3000/passwd"
+  />
 </template>
 
 <script>
@@ -22,8 +26,6 @@ import Header from './components/Header.vue';
 import Login from './components/Login.vue';
 import { ref } from 'vue';
 const util = require('util');
-
-const URL = 'localhost:3000';
 
 export default {
   name: 'ParentComponent',
@@ -56,6 +58,7 @@ export default {
       console.log(util.inspect(authorizeObject));
 
       console.log('Authorized obj: ' + authorizeObject.password);
+      loginStatus.value = true;
 
       /*
     REturn json object:
@@ -64,19 +67,8 @@ export default {
 
 */
       //const headers = { 'Content-Type': 'application/json' };
-      let url = `http://${URL}/?email=${authorizeObject.email}&password=${authorizeObject.password}`;
-      fetch(url /*, { headers }*/)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.userExist && data.allowed) loginStatus.value = true;
-          //loginStatus = true;
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log('Error occured ...' + err);
-        });
 
-      console.log('loginDone ---');
+      console.log('loginDone ---' + loginStatus.value);
     }
 
     /*                     ERROR HANDLING          BEGIN         */
