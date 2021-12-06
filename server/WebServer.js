@@ -1,17 +1,26 @@
 
 'use strict'
-const http = require('http'); // Import Node.js core module
-const fs = require('fs')
-const path = require('path')
-const url = require('url');
-const util = require('util');
+import * as http from "http"
+import * as fs from 'fs'
+import * as path from "path"
+import * as url from "url"
+import * as urtil from "util"
+// cli.js
+import { LowSync, JSONFileSync } from 'lowdb'
 
+//import { LowSync, JSONFileSync } from 'lowdb'
+
+
+const __dirname = path.resolve();
 
 const PORT = 3000;
 const PASSWDFILE = __dirname + '/secret/passwords.asc'
 const HOSTNAME = '127.0.0.1';
 
 var passwordsAvailable = [{}]
+
+const adapter = new JSONFileSync(__dirname + '/secret/db.json')
+const db = new LowSync(adapter)
 
 
 http.createServer((req, res) => {   //create web server
@@ -109,14 +118,36 @@ http.createServer((req, res) => {   //create web server
 
 }).listen(PORT, HOSTNAME, () => {
 
+    db.read()
+    if (!db.data) {
+        const timet = {
+            "timet":
+                [
+                    { "begin": '8:50', "end": '9:35', "title": 'SEW', "teacher": 'HELT' },
+                    { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
+                    { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
+                    { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
+                    { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
+                ],
+        }
+        db.data = { timetables: [], posts: [] }
+        db.data.posts.push({ title: 'lowdb' })
+        db.data.timetables.push(timet)
+    }
+
+
+    //db.data.posts.push({ title })
+
+    db.write()
+
     //console.log("curr dir: " + __dirname)
     fs.readFile(PASSWDFILE, (err, data) => {
         if (err) {
             console.log('Cannot read password-file due to: ' + err)
         } else {
-            this.passwordsAvailable = JSON.parse(data)
+            passwordsAvailable = JSON.parse(data)
             //console.log("pass: " + passwordsAvailable)
-            this.passwordsAvailable.map(item => console.log(item))
+            passwordsAvailable.map(item => console.log(item))
 
             //console.log(util.inspect(passwordsAvailable));
 
