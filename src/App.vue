@@ -24,8 +24,10 @@
 import Stundenplan from './components/Stundenplan.vue';
 import Header from './components/Header.vue';
 import Login from './components/Login.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 const util = require('util');
+
+const ServerURL = 'http://localhost:3000';
 
 export default {
   name: 'ParentComponent',
@@ -37,6 +39,7 @@ export default {
   setup() {
     let errorMess = ref('');
     let loginStatus = ref(false);
+
     let stundenPlanPar = ref({
       name: '',
       klasse: '5 AHIT',
@@ -50,6 +53,11 @@ export default {
         { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
         { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
       ],
+    });
+
+    onMounted(() => {
+      console.log('mounted .....');
+      fetchTimeTable('5ahit');
     });
 
     function loginDone(authorizeObject) {
@@ -66,11 +74,21 @@ export default {
 			 allowed:true
 
 */
-      //const headers = { 'Content-Type': 'application/json' };
 
       console.log('loginDone ---' + loginStatus.value);
     }
 
+    function fetchTimeTable(name) {
+      let url = `${ServerURL}/getTimeTable?timetable=${name}`;
+      fetch(url /*, { headers }*/)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log('Error occured ...' + err);
+        });
+    }
     /*                     ERROR HANDLING          BEGIN         */
 
     // pattern: 13:20 || 7:13 ... hh.mm;
@@ -202,6 +220,8 @@ export default {
       moveLessonUp,
       loginDone,
       loginStatus,
+      ServerURL,
+      fetchTimeTable,
     };
   },
 };

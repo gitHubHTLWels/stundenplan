@@ -90,7 +90,7 @@ export default {
     });
     let errorMessage = ref('');
 
-    function processLogin() {
+    /*   function processLogin() {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,29 +99,8 @@ export default {
           password: authorize.value.password,
         }),
       };
-      console.log('Fetching data ... ' + props.serverURL);
-      fetch(props.serverURL, requestOptions)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.userExist == false) {
-            errorMessage.value = `User: ${authorize.value.email} not found!`;
-          } else if (data.allowed == false) {
-            errorMessage.value = 'Password: Wrong password!';
-          } else {
-            context.emit('loginDone', authorize.value);
-            console.log(data);
-          }
-        })
-        .catch((err) => {
-          console.log('Error occured ...' + err);
-          errorMessage.value =
-            'Communication error occured in processing authority';
-        });
-    }
-
-    // function processLogin(values) {
-    //   let url = `http://${props.serverURL}?email=${authorize.value.email}&password=${authorize.value.password}`;
-    //   fetch(url /*, { headers }*/)
+      console.log('Fetching data ... ' + props.serverURL); */
+    //   fetch(props.serverURL, requestOptions)
     //     .then((response) => response.json())
     //     .then((data) => {
     //       if (data.userExist == false) {
@@ -130,8 +109,8 @@ export default {
     //         errorMessage.value = 'Password: Wrong password!';
     //       } else {
     //         context.emit('loginDone', authorize.value);
+    //         console.log(data);
     //       }
-    //       console.log(data);
     //     })
     //     .catch((err) => {
     //       console.log('Error occured ...' + err);
@@ -139,6 +118,27 @@ export default {
     //         'Communication error occured in processing authority';
     //     });
     // }
+
+    function processLogin() {
+      let url = `${props.serverURL}?email=${authorize.value.email}&password=${authorize.value.password}`;
+      fetch(url /*, { headers }*/)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.userExist == false) {
+            errorMessage.value = `User: ${authorize.value.email} not found!`;
+          } else if (data.allowed == false) {
+            errorMessage.value = 'Password: Wrong password!';
+          } else {
+            context.emit('loginDone', authorize.value);
+          }
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log('Error occured ...' + err);
+          errorMessage.value =
+            'Communication error occured in processing authority';
+        });
+    }
 
     function validateEmail(value) {
       if (!value) return 'Field cannot be empty';
