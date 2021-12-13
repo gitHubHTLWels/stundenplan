@@ -90,19 +90,12 @@ http.createServer((req, res) => {   //create web server
 
 
     }
-    else if (parsedUrl == "/getAllTimeTables") {
-
-        let d = Storage.getAllTimeTables()
-        res.end(JSON.stringify(d))
-    } else if (parsedUrl == "/getAvailableClasses") {
-        res.end(JSON.stringify(Storage.getAvailableClasses()))
-    }
     // GET http://localhost/getTimeTable?timetable=nnn
-    else if (parsedUrl == "/getTimeTable") {
+    else if (parsedUrl == "/timetable") {
         let queryObject = url.parse(req.url, true).query;
-        console.log("Query object: " + JSON.stringify(queryObject))
+        console.log("getTimeTable::uery object: " + JSON.stringify(queryObject))
 
-        let d = Storage.getOneTimeTableObject(queryObject.timetable)
+        let d = Storage.getTimetable(queryObject.class)
         console.log("result " + d)
         res.end(JSON.stringify(d))
     }
@@ -112,18 +105,6 @@ http.createServer((req, res) => {   //create web server
 
 }).listen(PORT, HOSTNAME, () => {
 
-    // fs.readFile(PASSWDFILE, function (err, data) {
-    //     if (err) {
-    //         console.log('Cannot read password-file due to: ' + err)
-    //     } else {
-    //         passwordsAvailable = JSON.parse(data)
-    //         //console.log("pass: " + passwordsAvailable)
-    //         passwordsAvailable.map(item => console.log(item))
-    //         //console.log(util.inspect(passwordsAvailable));
 
-    //     }
-    // })
-
-    // console.log("PASSwords .." + JSON.stringify(this.passwordsAvailable))
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });

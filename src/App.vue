@@ -25,9 +25,10 @@ import Stundenplan from './components/Stundenplan.vue';
 import Header from './components/Header.vue';
 import Login from './components/Login.vue';
 import { ref, onMounted } from 'vue';
-const util = require('util');
 
-const ServerURL = 'http://localhost:3000';
+//const util = require('util');
+
+const URI_PATH = 'http://localhost:3000/';
 
 export default {
   name: 'ParentComponent',
@@ -47,25 +48,41 @@ export default {
       stunden:
         'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
       timeTable: [
-        { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
-        { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
-        { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
-        { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
-        { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
+        // { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
+        // { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
+        // { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
+        // { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
+        // { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
       ],
     });
 
     onMounted(() => {
       console.log('mounted .....');
-      fetchTimeTable('5ahit');
+      //fetchTimeTable('5ahit');
     });
 
-    function loginDone(authorizeObject) {
-      stundenPlanPar.value.name = authorizeObject.email;
+    function getTimetable(className) {
+      let url = `${URI_PATH}timetable?class=${className}`;
+      errorMess.value = '';
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Received: ' + JSON.stringify(data) + data.tableExist);
+          if (data.tableExist) {
+            stundenPlanPar.value.timeTable = data.timeTable;
+            stundenPlanPar.value.klasse = className;
+          } else console.log('Data Table does not exist.');
+        })
+        .catch((e) => {
+          console.log(`Error occured in fetching timetable: ${e}`);
+          errorMess.value = 'Error in communication with Server';
+        });
+    }
 
-      console.log(util.inspect(authorizeObject));
-
-      console.log('Authorized obj: ' + authorizeObject.password);
+    function loginDone(user, className) {
+      stundenPlanPar.value.name = user;
+      //console.log(util.inspect(authorizeObject));
+      getTimetable(className);
       loginStatus.value = true;
 
       /*
@@ -78,17 +95,6 @@ export default {
       console.log('loginDone ---' + loginStatus.value);
     }
 
-    function fetchTimeTable(name) {
-      let url = `${ServerURL}/getTimeTable?timetable=${name}`;
-      fetch(url /*, { headers }*/)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log('Error occured ...' + err);
-        });
-    }
     /*                     ERROR HANDLING          BEGIN         */
 
     // pattern: 13:20 || 7:13 ... hh.mm;
@@ -220,8 +226,6 @@ export default {
       moveLessonUp,
       loginDone,
       loginStatus,
-      ServerURL,
-      fetchTimeTable,
     };
   },
 };
