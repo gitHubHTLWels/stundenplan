@@ -1,29 +1,18 @@
 
 
 import * as http from "http"
-import * as fs from 'fs'
-import * as path from "path"
 import * as url from "url"
-import * as urtil from "util"
+import * as util from "util"
 
 import Storage from "./utils/Tools.js"
 // cli.js
 
 
 
-const __dirname = path.resolve();
+
 
 const PORT = 3000;
-const PASSWDFILE = __dirname + '/secret/passwords.asc'
 const HOSTNAME = '127.0.0.1';
-
-var passwordsAvailable = [{}]
-
-function fillePasswordsAvailable(item) {
-    passwordsAvailable = item
-
-}
-const bindedFunction = fillePasswordsAvailable.bind(this)
 
 
 http.createServer((req, res) => {   //create web server
@@ -59,60 +48,42 @@ http.createServer((req, res) => {   //create web server
         /* Structure of queryObject:
             email: '',
            password: '',
+
+           Structure of return object 
+            userExist: true,
+            allowed: true
+            class: ''
+        
         */
 
         let queryObject = url.parse(req.url, true).query;
-        let jsonRet = {
-            userExist: true,
-            allowed: true
-        }
-
-        //console.logs("this.passwd: " + this.passwordsAvailable + ", " + passwordsAvailable)
-
-        let result = this.passwordsAvailable.find(item => {
-            return item.name == queryObject.email
-        })
-
-        if (result) {
-            if (result.password != queryObject.password)
-                jsonRet.allowed = false
-        } else {
-            jsonRet.userExist = false
-            jsonRet.allowed = false
-        }
-        console.log(`User: ${queryObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
+        let jsonRet = Storage.checkPasswd(queryObject.email, queryObject.password)
+        //console.log(`User: ${queryObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
         res.end(JSON.stringify(jsonRet));
     }
     else if (parsedUrl == "/passwd" && req.method == "POST") {
-        /* Structure of queryObject:
+        /* Structure of body-object:
             email: '',
            password: '',
-        */
 
-        let jsonRet = {
+          Structure of return object 
             userExist: true,
             allowed: true
-        }
+            class: ''
+
+        */
+
+
         let postData = ''
 
         req.on('data', chunk => {
             postData += chunk;
         });
         req.on('end', () => {
-            console.log("Client post data : " + postData);
+            //console.log("Client post data : " + postData);
             let postDataObject = JSON.parse(postData);
-            let result = base.passwordsAvailable.find(item => {
-                return item.name == postDataObject.email
-            })
-
-            if (result) {
-                if (result.password != postDataObject.password)
-                    jsonRet.allowed = false
-            } else {
-                jsonRet.userExist = false
-                jsonRet.allowed = false
-            }
-            console.log(`User: ${postDataObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
+            let jsonRet = Storage.checkPasswd(postDataObject.email, ostDataObject.password)
+            //console.log(`User: ${postDataObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
             res.end(JSON.stringify(jsonRet))
 
         })
@@ -141,19 +112,17 @@ http.createServer((req, res) => {   //create web server
 
 }).listen(PORT, HOSTNAME, () => {
 
-    fs.readFile(PASSWDFILE, function (err, data) {
-        if (err) {
-            console.log('Cannot read password-file due to: ' + err)
-        } else {
-            passwordsAvailable = JSON.parse(data)
-            //console.log("pass: " + passwordsAvailable)
-            passwordsAvailable.map(item => console.log(item))
-            //bindedFunction(passwordsAvailable)
+    // fs.readFile(PASSWDFILE, function (err, data) {
+    //     if (err) {
+    //         console.log('Cannot read password-file due to: ' + err)
+    //     } else {
+    //         passwordsAvailable = JSON.parse(data)
+    //         //console.log("pass: " + passwordsAvailable)
+    //         passwordsAvailable.map(item => console.log(item))
+    //         //console.log(util.inspect(passwordsAvailable));
 
-            //console.log(util.inspect(passwordsAvailable));
-
-        }
-    })
+    //     }
+    // })
 
     // console.log("PASSwords .." + JSON.stringify(this.passwordsAvailable))
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);

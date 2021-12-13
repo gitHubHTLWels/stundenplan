@@ -1,64 +1,50 @@
 import { LowSync, JSONFileSync } from 'lowdb'
-import * as path from "path"
+import path from 'path'
 
 
+const __dirname = path.resolve()
+const DBFILE = __dirname + "/secret/jsonDB.json"
+const db = new LowSync(new JSONFileSync(DBFILE))
 
-const __dirname = path.resolve();
-const adapter = new JSONFileSync(__dirname + '/secret/db.json')
-const db = new LowSync(adapter)
-
-class DBWrapper {
-    constructor() {
-        db.read()
-        if (!db.data) {
-            const timet = {
-                "class": {
-                    "name": "5ahit",
-                    "table":
-                        [
-                            { "begin": '8:50', "end": '9:35', "title": 'SEW', "teacher": 'HELT' },
-                            { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
-                            { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
-                            { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
-                            { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
-                        ],
-                },
-
-
-            }
-
-            const time2 = {
-                "class": {
-                    "name": "5bhit",
-                    "table":
-                        [
-                            { "begin": '8:50', "end": '9:35', "title": 'SEW', "teacher": 'HELT' },
-                            { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
-                            { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
-                            { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
-                            { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
-                        ],
-                }
-            }
-
-            const auth = {
-                "user": "maier@gmail.com",
-                "password": "sonne",
-            }
-            const auth1 = {
-                "user": "hilde@gmail.com",
-                "password": "mond",
-            }
-
-
-            db.data = { timetables: [], passwd: [] }
-
-            db.data.timetables.push(timet)
-            db.data.timetables.push(time2)
-            db.data.passwd.push(auth)
-            db.data.passwd.push(auth1)
-            db.write()
+constructor() {
+    db.read()
+    if (!db.data) {
+        const user1 = {
+            "name": "seppMaier@gmail.com",
+            "password": "fcBayern",
+            "class": "5ahit"
         }
+        const user2 = {
+            "name": "marco.reus@info.de",
+            "password": "dortmund",
+            "class": "5bhit"
+        }
+        const timeTable5ahit = {
+            "class": "5ahit",
+            "timetable": [
+                { beginn: '7:50', ende: '8:40', titel: 'MAT', teacher: 'SPRI' },
+                { beginn: '8:45', ende: '9:35', titel: 'ENG', teacher: "SCHN" },
+                { beginn: '9:40', ende: '10:30', titel: 'ITP', teacher: "GAMS" },
+                { beginn: '10:45', ende: '11:35', titel: 'Esot', teacher: "XYZM" },
+            ]
+        }
+        const timeTable5bhit = {
+            "class": "5bhit",
+            "timetable": [
+                { beginn: '7:50', ende: '8:40', titel: 'SEW', teacher: 'HELT' },
+                { beginn: '8:45', ende: '9:35', titel: 'Rel', teacher: "POIH" },
+                { beginn: '9:40', ende: '10:30', titel: 'ITP', teacher: "GAMS" },
+                { beginn: '10:45', ende: '11:35', titel: 'Deutsch', teacher: "SPOD" },
+            ]
+        }
+
+
+        db.data = { passwd: [], timetables: [] }
+        db.data.passwd.push(user1)
+        db.data.passwd.push(user2)
+        db.data.timetables.push(timeTable5ahit)
+        db.data.timetables.push(timeTable5bhit)
+        db.write()
     }
 
     getAllTimeTables() {
@@ -67,28 +53,53 @@ class DBWrapper {
     }
     writeTimeTableObject(data) {
         console.log("writeTimeTable")
-
-
     }
 
-    getOneTimeTableObject(idName) {
-        console.log("getOneTimeTableObject: " + idName)
-        let result = db.data.timetables.find(item => {
-            return (item.class.name == idName)
+    checkPasswd(login_user, login_passwd) {
+        let jsonRet = {
+            userExist: true,
+            allowed: true
+            class: ''
+        }
+
+        //console.log("this.passwd: " + login_user + ", " + login_passwd)
+
+        let result = db.data.passwd.find(item => {
+            //console.log("item.name")
+            return item.user == login_user
         })
-        if (result)
-            return result.class.table
-        else
-            return []
+
+        if (result) {
+            jsonRet.class = result.class
+            if (result.password != login_passwd)
+                jsonRet.allowed = false
+        } else {
+            jsonRet.userExist = false
+            jsonRet.allowed = false
+        }
+        return jsonRet
+    }
+
+    getTimetable(className) {
+        let result = db.data.timetables.find(item => {
+            return (item.class == className.toLowerCase())
+        })
+        let jsonRet = {
+            tableExist: false,
+            timeTable: []
+        }
+        if (result) {
+            jsonRet.timeTable = result.timetable
+            jsonRet.tableExist = true
+        }
+        return jsonRet
     }
 
     getAvailableClasses() {
-        let result = db.data.timetables.map(item => {
-            return { "classname": item.class.name }
-        })
+
 
         //console.log(JSON.stringify(result))
-        return result
+        // return result
     }
 
 }

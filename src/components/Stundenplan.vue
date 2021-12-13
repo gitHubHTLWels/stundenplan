@@ -5,6 +5,8 @@
       <div class="item">
         <input v-model="optionsShowTeacher" type="checkbox" id="showTeacher" />
         <label for="showTeacher">Anzeige Lehrer</label>
+        <label for="Klassen">Klassen</label>
+        <input type="checkbox" value="5ahit" v-model="availableClasses" />
       </div>
     </div>
 
@@ -107,6 +109,9 @@ export default {
       title: 'fach',
       teacher: '',
     };
+
+    let availableClasses = ref(['5ahit', '5bhit']);
+
     /* VALIdation */
 
     function isTimeValid(value) {
@@ -130,6 +135,7 @@ export default {
       console.log('Stundenplan::moveLessonUp(' + index + ')');
       context.emit('moveLessonUp', index);
     }
+
     function moveLessonDown(index) {
       console.log('Stundenplan::moveLessonDown(' + index + ')');
       context.emit('moveLessonDown', index);
@@ -149,6 +155,7 @@ export default {
       handleMouseOver,
       isTimeValid,
       checkValue,
+      availableClasses,
     };
   },
 };
