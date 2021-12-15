@@ -17,6 +17,7 @@ const HOSTNAME = '127.0.0.1';
 
 http.createServer((req, res) => {   //create web server
 
+    // CORS -- allow communication 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
@@ -30,12 +31,9 @@ http.createServer((req, res) => {   //create web server
             parsedUrl = req.url.substring(0, index)
     }
 
-
-    if (parsedUrl == '/') { //check the URL of the current reques let queryObject = JSON.stringify(url.parse(req.url, true).query)t
-
-        // set response header
+    if (parsedUrl == '/') {
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write('<html><body><p>HOME-PAGE</p></body></html>');
+        res.write('<html><body><p>First Page</p></body></html>');
         res.end();
 
     }
@@ -44,11 +42,9 @@ http.createServer((req, res) => {   //create web server
         res.write('<html><body><p>ADMIN-Page.</p></body></html>');
         res.end();
 
-    } else if (parsedUrl == "/passwd" && req.method == "GET") {
-        /* Structure of queryObject:
-            email: '',
-           password: '',
-
+    } // Pattern: http://HOST/passwd@email=NN&password=123 
+    else if (parsedUrl == "/passwd" && req.method == "GET") {
+        /* 
            Structure of return object 
             userExist: true,
             allowed: true
@@ -72,15 +68,12 @@ http.createServer((req, res) => {   //create web server
             class: ''
 
         */
-
-
         let postData = ''
 
         req.on('data', chunk => {
             postData += chunk;
         });
         req.on('end', () => {
-            //console.log("Client post data : " + postData);
             let postDataObject = JSON.parse(postData);
             let jsonRet = Storage.checkPasswd(postDataObject.email, ostDataObject.password)
             //console.log(`User: ${postDataObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
@@ -90,21 +83,24 @@ http.createServer((req, res) => {   //create web server
 
 
     }
-    // GET http://localhost/getTimeTable?timetable=nnn
+    // Pattern: GET http://HOST/getTimeTable?timetable=nnn
     else if (parsedUrl == "/timetable") {
         let queryObject = url.parse(req.url, true).query;
-        console.log("getTimeTable::uery object: " + JSON.stringify(queryObject))
-
+        //console.log("getTimeTable::uery object: " + JSON.stringify(queryObject))
         let d = Storage.getTimetable(queryObject.class)
-        console.log("result " + d)
+        //console.log("result " + d)
         res.end(JSON.stringify(d))
+    } res.end(`Invalid Request: ${req.url} `);
+
+    else {
+        console.log(`Request ${req.url} is unknown - no route is available.`)
+        res.writeHead(501, { 'Content-Type': 'text/html' });
+        res.write('<html><body><p>Request cannot be processed.</p></body></html>');
+        res.end();
+
     }
 
-    else
-        res.end(`Invalid Request: ${req.url} `);
 
 }).listen(PORT, HOSTNAME, () => {
-
-
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });

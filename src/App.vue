@@ -1,13 +1,13 @@
 <template>
   <Header
     title="Stundentafel"
-    :name="stundenPlanPar.name"
-    :units="stundenPlanPar.timeTable.length"
+    :name="timeTableInfo.name"
+    :units="timeTableInfo.timeTable.length"
     :errorMessage="errorMess"
   ></Header>
   <Stundenplan
-    v-if="loginStatus == true"
-    :timeTableParams="stundenPlanPar"
+    v-if="loginstate == true"
+    :timeTableParams="timeTableInfo"
     @addLesson="addLesson"
     @remLesson="removeLesson"
     @moveLessonDown="moveLessonDown"
@@ -39,51 +39,51 @@ export default {
   },
   setup() {
     let errorMess = ref('');
-    let loginStatus = ref(false);
+    let loginstate = ref(false);
 
-    let stundenPlanPar = ref({
+    let timeTableInfo = ref({
       name: '',
-      klasse: '5 AHIT',
-      datum: new Date().toLocaleDateString(),
+      currentClass: '',
+      currentDate: new Date().toLocaleDateString(),
       stunden:
         'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
       timeTable: [
-        // { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
-        // { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
-        // { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
-        // { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
-        // { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' },
+        /*  { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
+        { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
+        { begin: '10:45', end: '11:35', title: 'ITP', teacher: 'GAMS' },
+        { begin: '11:40', end: '12:30', title: 'English', teacher: 'KENN' },
+        { begin: '12:35', end: '13:25', title: 'SYT', teacher: 'REFR' }, */
       ],
     });
 
     onMounted(() => {
       console.log('mounted .....');
-      //fetchTimeTable('5ahit');
     });
 
-    function getTimetable(className) {
+    function getTimetable(user, className) {
       let url = `${URI_PATH}timetable?class=${className}`;
       errorMess.value = '';
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          console.log('Received: ' + JSON.stringify(data) + data.tableExist);
+          //console.log('Received: ' + JSON.stringify(data) + data.tableExist);
           if (data.tableExist) {
-            stundenPlanPar.value.timeTable = data.timeTable;
-            stundenPlanPar.value.klasse = className;
+            timeTableInfo.value.timeTable = data.timeTable;
+            timeTableInfo.value.currentClass = className;
+            timeTableInfo.value.name = user;
           } else console.log('Data Table does not exist.');
         })
         .catch((e) => {
-          console.log(`Error occured in fetching timetable: ${e}`);
-          errorMess.value = 'Error in communication with Server';
+          errorMess.value = 'Error in server communication';
+          console.log(' Error occuication with Server'+e);
         });
     }
 
     function loginDone(user, className) {
-      stundenPlanPar.value.name = user;
+      timeTableInfo.value.name = user;
       //console.log(util.inspect(authorizeObject));
-      getTimetable(className);
-      loginStatus.value = true;
+      getTimetable(user, className);
+      loginstate.value = true;
 
       /*
     REturn json object:
@@ -92,7 +92,7 @@ export default {
 
 */
 
-      console.log('loginDone ---' + loginStatus.value);
+      console.log('loginDone ---' + loginstate.value);
     }
 
     /*                     ERROR HANDLING          BEGIN         */
@@ -173,7 +173,7 @@ export default {
       errorMess.value = '';
       if (!unitCheckForEmptyEntries(unit)) return;
 
-      let overlapping = stundenPlanPar.value.timeTable.filter((entry) => {
+      let overlapping = timeTableInfo.value.timeTable.filter((entry) => {
         let retV = entry.begin === unit.begin;
         return retV;
       });
@@ -186,46 +186,46 @@ export default {
       unit.begin = '';
       unit.end = '';
       unit.title = '';
-      stundenPlanPar.value.timeTable.push(clonedObj);
+      timeTableInfo.value.timeTable.push(clonedObj);
       errorMess.value = '';
     }
 
     function removeLesson(index) {
-      stundenPlanPar.value.timeTable.splice(index, 1);
-      // console.log(index + 'length: ' + stundenPlanPar.value.timeTable.length);
+      timeTableInfo.value.timeTable.splice(index, 1);
+      // console.log(index + 'length: ' + timeTableInfo.value.timeTable.length);
     }
     function moveLessonDown(index) {
       //console.log('move lessons down ...');
-      let len = stundenPlanPar.value.timeTable.length;
+      let len = timeTableInfo.value.timeTable.length;
 
       if (len <= 1 || index == len - 1) return;
 
       //console.log('len: ' + len + '' + index);
-      let xChange = stundenPlanPar.value.timeTable[index + 1];
-      stundenPlanPar.value.timeTable[index + 1] =
-        stundenPlanPar.value.timeTable[index];
-      stundenPlanPar.value.timeTable[index] = xChange;
+      let xChange = timeTableInfo.value.timeTable[index + 1];
+      timeTableInfo.value.timeTable[index + 1] =
+        timeTableInfo.value.timeTable[index];
+      timeTableInfo.value.timeTable[index] = xChange;
     }
 
     function moveLessonUp(index) {
-      let len = stundenPlanPar.value.timeTable.length;
+      let len = timeTableInfo.value.timeTable.length;
 
       if (len <= 1 || index == 0) return;
-      let xChange = stundenPlanPar.value.timeTable[index - 1];
-      stundenPlanPar.value.timeTable[index - 1] =
-        stundenPlanPar.value.timeTable[index];
-      stundenPlanPar.value.timeTable[index] = xChange;
+      let xChange = timeTableInfo.value.timeTable[index - 1];
+      timeTableInfo.value.timeTable[index - 1] =
+        timeTableInfo.value.timeTable[index];
+      timeTableInfo.value.timeTable[index] = xChange;
     }
 
     return {
-      stundenPlanPar,
+      timeTableInfo,
       errorMess,
       addLesson,
       removeLesson,
       moveLessonDown,
       moveLessonUp,
       loginDone,
-      loginStatus,
+      loginstate,
     };
   },
 };
