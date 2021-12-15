@@ -75,7 +75,7 @@ export default {
         })
         .catch((e) => {
           errorMess.value = 'Error in server communication';
-          console.log(' Error occuication with Server'+e);
+          console.log(' Error occuication with Server' + e);
         });
     }
 
@@ -84,15 +84,6 @@ export default {
       //console.log(util.inspect(authorizeObject));
       getTimetable(user, className);
       loginstate.value = true;
-
-      /*
-    REturn json object:
-       userExist:true,
-			 allowed:true
-
-*/
-
-      console.log('loginDone ---' + loginstate.value);
     }
 
     /*                     ERROR HANDLING          BEGIN         */
