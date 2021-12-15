@@ -2,6 +2,7 @@
   <Header
     title="Stundentafel"
     :name="timeTableInfo.name"
+    :currentClass="timeTableInfo.currentClass"
     :units="timeTableInfo.timeTable.length"
     :errorMessage="errorMess"
   ></Header>

@@ -5,7 +5,7 @@
     <div id="header">
       <img src="../assets/htlwels.png" />
       <h1>{{ title }}</h1>
-      <h2>für {{ name }}</h2>
+      <h2>{{ name }} {{ currentClass }}</h2>
     </div>
     <!-- <div id="info">
       <h3>Anzahl der Einheiten: {{ units }}</h3>
@@ -25,6 +25,10 @@ export default {
       required: true,
     },
     name: {
+      type: String,
+      required: true,
+    },
+    currentClass: {
       type: String,
       required: true,
     },

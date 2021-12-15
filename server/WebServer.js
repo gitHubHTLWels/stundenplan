@@ -90,7 +90,7 @@ http.createServer((req, res) => {   //create web server
         let d = Storage.getTimetable(queryObject.class)
         //console.log("result " + d)
         res.end(JSON.stringify(d))
-    } res.end(`Invalid Request: ${req.url} `);
+    }
 
     else {
         console.log(`Request ${req.url} is unknown - no route is available.`)

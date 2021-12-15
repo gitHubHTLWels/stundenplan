@@ -5,14 +5,12 @@
       <div class="item">
         <input v-model="optionsShowTeacher" type="checkbox" id="showTeacher" />
         <label for="showTeacher">Anzeige Lehrer</label>
-        <label for="Klassen">Klassen</label>
-        <input type="checkbox" value="5ahit" v-model="availableClasses" />
       </div>
     </div>
 
     <div class="block">
-      <h2>Klasse: {{ timeTableParams.klasse }}</h2>
-      <h2>am {{ timeTableParams.datum }}</h2>
+      <h2>am {{ timeTableParams.currentDate }}</h2>
+      <h2>Klasse {{ timeTableParams.currentClass }}</h2>
 
       <table>
         <thead>
@@ -115,7 +113,7 @@ export default {
     /* VALIdation */
 
     function isTimeValid(value) {
-      console.log('isTimeValid ..');
+      //console.log('isTimeValid ..');
       if (!value) return 'Eingabe kann nicht leer sein';
     }
     function checkValue(e) {
@@ -124,15 +122,12 @@ export default {
 
     function addUnit(e) {
       e.preventDefault();
-      console.log('Stundenplan::addUnit()');
       context.emit('addLesson', newTableEntry);
     }
     function remLesson(index) {
-      console.log('Stundenplan::remLesson(' + index + ')');
       context.emit('remLesson', index);
     }
     function moveLessonUp(index) {
-      console.log('Stundenplan::moveLessonUp(' + index + ')');
       context.emit('moveLessonUp', index);
     }
 
@@ -172,7 +167,7 @@ export default {
   margin: 0 10px;
 }
 #optionBlock {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 #header h3,
 h1 {
@@ -183,7 +178,7 @@ h1 {
 }
 .block {
   margin-left: 100px;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 #optionBlock .item {
   margin-left: 10px;
