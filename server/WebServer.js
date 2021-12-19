@@ -18,10 +18,18 @@ const HOSTNAME = '127.0.0.1';
 http.createServer((req, res) => {   //create web server
 
     // CORS -- allow communication 
+    // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Request-Method', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
-    res.setHeader('Access-Control-Allow-Headers', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
 
     let parsedUrl = req.url
 
@@ -29,6 +37,11 @@ http.createServer((req, res) => {   //create web server
         let index = parsedUrl.indexOf("?")
         if (index > 0)
             parsedUrl = req.url.substring(0, index)
+    }
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
     }
 
     if (parsedUrl == '/') {
@@ -53,20 +66,22 @@ http.createServer((req, res) => {   //create web server
         */
 
         let queryObject = url.parse(req.url, true).query;
+        console.log("User: " + queryObject.email)
         let jsonRet = Storage.checkPasswd(queryObject.email, queryObject.password)
         //console.log(`User: ${queryObject.email} is known? ${jsonRet.userExist} and allowed? ${jsonRet.allowed}`)
         res.end(JSON.stringify(jsonRet));
     }
+
     else if (parsedUrl == "/passwd" && req.method == "POST") {
         /* Structure of body-object:
             email: '',
            password: '',
-
+    
           Structure of return object 
             userExist: true,
             allowed: true
             class: ''
-
+    
         */
         let postData = ''
 
@@ -84,13 +99,62 @@ http.createServer((req, res) => {   //create web server
 
     }
     // Pattern: GET http://HOST/getTimeTable?timetable=nnn
-    else if (parsedUrl == "/timetable") {
+    else if (parsedUrl == "/timetable" && req.method == "GET") {
         let queryObject = url.parse(req.url, true).query;
         //console.log("getTimeTable::uery object: " + JSON.stringify(queryObject))
         let d = Storage.getTimetable(queryObject.class)
         //console.log("result " + d)
         res.end(JSON.stringify(d))
     }
+    else if (parsedUrl == "/timetable" && req.method == "DELETE") {
+        /* 
+           Structure of return object 
+            userExist: true,
+            allowed: true
+            class: ''
+        
+        */
+        console.log("DELETE")
+
+        let postData = ''
+
+        req.on('data', chunk => {
+            postData += chunk;
+        });
+        req.on('end', () => {
+            let postDataObject = JSON.parse(postData);
+            let jsonRet = Storage.timeTable_remove(postDataObject.class)
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(jsonRet))
+
+        })
+
+    }
+    else if (parsedUrl == "/timetable" && req.method == "PUT") {
+        /* 
+           Structure of return object 
+            userExist: true,
+            allowed: true
+            class: ''
+        
+        */
+        console.log("PUT")
+
+        let postData = ''
+
+        req.on('data', chunk => {
+            postData += chunk;
+        });
+        req.on('end', () => {
+            let postDataObject = JSON.parse(postData);
+            let jsonRet = Storage.timeTable_update(postDataObject)
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(jsonRet))
+
+        })
+
+    }
+
 
     else {
         console.log(`Request ${req.url} is unknown - no route is available.`)

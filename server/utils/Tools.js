@@ -14,29 +14,31 @@ class DBWrapper {
             const user1 = {
                 "name": "seppMaier@gmail.com",
                 "password": "fcBayern",
-                "class": "5ahit"
+                "class": "5ahit",
+                "isAdmin": false
             }
             const user2 = {
                 "name": "marco.reus@info.de",
                 "password": "dortmund",
-                "class": "5bhit"
+                "class": "5bhit",
+                "isAdmin": true
             }
             const timeTable5ahit = {
                 "class": "5ahit",
                 "timetable": [
-                    { beginn: '7:50', ende: '8:40', titel: 'MAT', teacher: 'SPRI' },
-                    { beginn: '8:45', ende: '9:35', titel: 'ENG', teacher: "SCHN" },
-                    { beginn: '9:40', ende: '10:30', titel: 'ITP', teacher: "GAMS" },
-                    { beginn: '10:45', ende: '11:35', titel: 'Esot', teacher: "XYZM" },
+                    { begin: '7:50', end: '8:40', title: 'MAT', teacher: 'SPRI' },
+                    { begin: '8:45', end: '9:35', title: 'ENG', teacher: "SCHN" },
+                    { begin: '9:40', end: '10:30', title: 'ITP', teacher: "GAMS" },
+                    { begin: '10:45', end: '11:35', title: 'Esot', teacher: "XYZM" },
                 ]
             }
             const timeTable5bhit = {
                 "class": "5bhit",
                 "timetable": [
-                    { beginn: '7:50', ende: '8:40', titel: 'SEW', teacher: 'HELT' },
-                    { beginn: '8:45', ende: '9:35', titel: 'Rel', teacher: "POIH" },
-                    { beginn: '9:40', ende: '10:30', titel: 'ITP', teacher: "GAMS" },
-                    { beginn: '10:45', ende: '11:35', titel: 'Deutsch', teacher: "SPOD" },
+                    { begin: '7:50', end: '8:40', title: 'SEW', teacher: 'HELT' },
+                    { begin: '8:45', end: '9:35', title: 'Rel', teacher: "POIH" },
+                    { begin: '9:40', end: '10:30', title: 'ITP', teacher: "GAMS" },
+                    { begin: '10:45', end: '11:35', title: 'Deutsch', teacher: "SPOD" },
                 ]
             }
 
@@ -55,23 +57,70 @@ class DBWrapper {
         console.log("writeTimeTable" + data)
     }
 
+    timeTable_remove(className) {
+        let inde = db.data.timetables.findIndex(item => {
+            //console.log("item.name " + item.name)
+            return item.class == className
+        })
+        //console.log("Found index: " + inde)
+        if (inde > -1) {
+            db.data.timetables.splice(inde, 1)
+            db.write()
+            return {
+                done: true
+            }
+        }
+
+
+        return {
+            done: false
+        }
+
+    }
+
+
+    timeTable_update(timetable) {
+        //console.log("timeTAble update for " + timetable.className)
+        let result = db.data.timetables.find(item => {
+            //console.log("item.name " + item.name)
+            return item.class == timetable.className
+        })
+
+        //console.log("timeTable_update...." + result)
+        if (result) {
+            result.timetable = timetable.timetable
+            db.write()
+            return {
+                done: true
+            }
+        } else {
+            return {
+                done: false
+            }
+        }
+
+    }
+
 
     checkPasswd(loginUser, loginPasswd) {
         let jsonRet = {
             userExist: true,
             allowed: true,
-            class: ''
+            class: '',
+            isAdmin: false
         }
 
         console.log("this.passwd: " + loginUser + ", " + loginPasswd)
 
         let result = db.data.passwd.find(item => {
-            //console.log("item.name")
-            return item.user == loginUser
+            console.log("item.name " + item.name)
+            return item.name == loginUser
         })
 
+        console.log("DB:: User found" + result)
         if (result) {
             jsonRet.class = result.class
+            jsonRet.isAdmin = result.isAdmin
             if (result.password != loginPasswd)
                 jsonRet.allowed = false
         } else {
