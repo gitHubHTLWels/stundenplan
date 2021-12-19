@@ -13,6 +13,8 @@
     @remLesson="removeLesson"
     @moveLessonDown="moveLessonDown"
     @moveLessonUp="moveLessonUp"
+    @updateTimetable="updateTimetable"
+    @deleteTimetable="deleteTimetable"
   />
   <Login
     v-else
@@ -46,8 +48,7 @@ export default {
       name: '',
       currentClass: '',
       currentDate: new Date().toLocaleDateString(),
-      stunden:
-        'EH 1: SEW, EH 2: REL, EH 3: ITP, EH 4: Englisch, EH 5: Pause, EH 6: SYT',
+      isAdmin: false,
       timeTable: [
         /*  { begin: '8:50', end: '9:35', title: 'SEW', teacher: 'HELT' },
         { begin: '9:40', end: '10:30', title: 'Reli', teacher: 'BARE' },
@@ -61,7 +62,7 @@ export default {
       console.log('mounted .....');
     });
 
-    function getTimetable(user, className) {
+    function getTimetable(user, className, isAdmin) {
       let url = `${URI_PATH}timetable?class=${className}`;
       errorMess.value = '';
       fetch(url)
@@ -72,6 +73,7 @@ export default {
             timeTableInfo.value.timeTable = data.timeTable;
             timeTableInfo.value.currentClass = className;
             timeTableInfo.value.name = user;
+            timeTableInfo.value.isAdmin = isAdmin;
           } else console.log('Data Table does not exist.');
         })
         .catch((e) => {
@@ -80,11 +82,77 @@ export default {
         });
     }
 
-    function loginDone(user, className) {
+    function loginDone(user, className, isAdmin) {
       timeTableInfo.value.name = user;
+      //console.log('isADMIN: ' + isAdmin);
       //console.log(util.inspect(authorizeObject));
-      getTimetable(user, className);
+      getTimetable(user, className, isAdmin);
       loginstate.value = true;
+    }
+
+    function updateTimetable(timeTableStruct) {
+      console.log('updateTime ' + timeTableStruct.currentClas + ', ');
+      const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          className: timeTableStruct.currentClass,
+          timetable: timeTableStruct.timeTable,
+        }),
+      };
+      let url = `${URI_PATH}timetable`;
+      errorMess.value = '';
+      fetch(url, requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          //console.log('Received: ' + JSON.stringify(data) + data.tableExist);
+          if (data.done) {
+            errorMess.value = 'Timetable has been updated successfully.';
+          } else {
+            console.log('Data Table does not exist.');
+            errorMess.value =
+              'Timetable for class: ' +
+              timeTableStruct.currentClass +
+              ' does not exist.';
+          }
+        })
+        .catch((e) => {
+          errorMess.value = 'Error in server communication';
+          console.log(' Error occuication with Server' + e);
+        });
+    }
+
+    function deleteTimetable(className) {
+      console.log('deleteTimetable ' + className);
+      const requestOptions = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          className: className,
+        }),
+      };
+      let url = `${URI_PATH}timetable`;
+      errorMess.value = '';
+      fetch(url, requestOptions)
+        .then((response) => response.json())
+        .then((data) => {
+          //console.log('Received: ' + JSON.stringify(data) + data.tableExist);
+          if (data.done) {
+            timeTableInfo.value.timeTable = [];
+            timeTableInfo.value.currentClass = '';
+            errorMess.value = 'Timetable has been deleted successfully.';
+          } else {
+            console.log('Data Table does not exist.');
+            errorMess.value =
+              'Timetable for class: ' + className + ' does not exist.';
+          }
+        })
+        .catch((e) => {
+          errorMess.value = 'Error in server communication';
+          console.log(' Error occuication with Server' + e);
+        });
+      timeTableInfo.value.timeTable = [];
+      timeTableInfo.value.currentClass = '';
     }
 
     /*                     ERROR HANDLING          BEGIN         */
@@ -218,6 +286,8 @@ export default {
       moveLessonUp,
       loginDone,
       loginstate,
+      updateTimetable,
+      deleteTimetable,
     };
   },
 };

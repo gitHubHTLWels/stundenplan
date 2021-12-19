@@ -19,7 +19,7 @@
             <td>Ende</td>
             <td>Fach</td>
             <td v-if="optionShowTeacher">Lehrer</td>
-            <td>Modifikationen</td>
+            <td v-if="timeTableParams.isAdmin == true">Modifikationen</td>
           </tr>
         </thead>
         <tbody>
@@ -32,14 +32,14 @@
             <td>{{ item.end }}</td>
             <td>{{ item.title }}</td>
             <td v-if="optionsShowTeacher">{{ item.teacher }}</td>
-            <th class="actions">
+            <th v-if="timeTableParams.isAdmin == true" class="actions">
               <button v-on:click="moveLessonUp(index)">&#8593;</button>
               <button v-on:click="moveLessonDown(index)">&#8595;</button>
               <button v-on:click="remLesson(index)">&times;</button>
             </th>
           </tr>
         </tbody>
-        <tfoot>
+        <tfoot v-if="timeTableParams.isAdmin == true">
           <tr>
             <td>
               <input
@@ -80,6 +80,28 @@
           </tr>
         </tfoot>
       </table>
+      <div v-if="timeTableParams.isAdmin == true" id="adminContainer">
+        <span class="adminElem">
+          <button v-on:click="updateTimetable">
+            <font-awesome-icon
+              :icon="['fas', 'edit']"
+              class="fa-2x cent"
+              color="gray"
+            />
+            Update
+          </button>
+        </span>
+        <span class="adminElem">
+          <button v-on:click="deleteTimetable">
+            <font-awesome-icon
+              :icon="['fas', 'trash']"
+              class="fa-2x cent"
+              color="gray"
+            />
+            Delete
+          </button>
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -136,6 +158,15 @@ export default {
       context.emit('moveLessonDown', index);
     }
 
+    function deleteTimetable() {
+      console.log('delete timetable ' + props.timeTableParams.currentClass);
+      context.emit('deleteTimetable', props.timeTableParams.currentClass);
+    }
+    function updateTimetable() {
+      console.log('update timetable ' + props.timeTableParams.currentClass);
+      context.emit('updateTimetable', props.timeTableParams);
+    }
+
     function handleMouseOver(index) {
       console.log('mous over ' + index);
     }
@@ -151,6 +182,8 @@ export default {
       isTimeValid,
       checkValue,
       availableClasses,
+      deleteTimetable,
+      updateTimetable,
     };
   },
 };
@@ -211,5 +244,13 @@ table th {
   font-size: 0.8em;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+#adminContainer {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 15px;
+}
+.adminElem {
+  margin-right: 10px;
 }
 </style>

@@ -110,10 +110,10 @@ class DBWrapper {
             isAdmin: false
         }
 
-        console.log("this.passwd: " + loginUser + ", " + loginPasswd)
+        //console.log("this.passwd: " + loginUser + ", " + loginPasswd)
 
         let result = db.data.passwd.find(item => {
-            console.log("item.name " + item.name)
+            //console.log("item.name " + item.name)
             return item.name == loginUser
         })
 

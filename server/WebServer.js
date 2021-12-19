@@ -101,21 +101,18 @@ http.createServer((req, res) => {   //create web server
     // Pattern: GET http://HOST/getTimeTable?timetable=nnn
     else if (parsedUrl == "/timetable" && req.method == "GET") {
         let queryObject = url.parse(req.url, true).query;
-        //console.log("getTimeTable::uery object: " + JSON.stringify(queryObject))
         let d = Storage.getTimetable(queryObject.class)
-        //console.log("result " + d)
         res.end(JSON.stringify(d))
     }
     else if (parsedUrl == "/timetable" && req.method == "DELETE") {
         /* 
            Structure of return object 
-            userExist: true,
-            allowed: true
-            class: ''
+            done: true|false
+           
+            Structure of body  
+            className 
         
         */
-        console.log("DELETE")
-
         let postData = ''
 
         req.on('data', chunk => {
@@ -123,7 +120,7 @@ http.createServer((req, res) => {   //create web server
         });
         req.on('end', () => {
             let postDataObject = JSON.parse(postData);
-            let jsonRet = Storage.timeTable_remove(postDataObject.class)
+            let jsonRet = Storage.timeTable_remove(postDataObject.className)
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(jsonRet))
 
@@ -133,12 +130,14 @@ http.createServer((req, res) => {   //create web server
     else if (parsedUrl == "/timetable" && req.method == "PUT") {
         /* 
            Structure of return object 
-            userExist: true,
-            allowed: true
-            class: ''
+            done: true|false
         
+        Structure of body
+            className
+             timetable
+
         */
-        console.log("PUT")
+
 
         let postData = ''
 

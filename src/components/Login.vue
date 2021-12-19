@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Form class="formwrapper" @submit="processLoginGetMethod">
+    <Form class="formwrapper" @submit="processLogin">
       <div class="formTitle">
         <h2>HTL-Wels/AHIT5</h2>
       </div>
@@ -119,7 +119,7 @@ export default {
         });
     }
 
-    function processLoginGetMethod() {
+    function processLogin() {
       let url = `${props.serverURL}?email=${authorize.value.email}&password=${authorize.value.password}`;
       fetch(url /*, { headers }*/)
         .then((response) => response.json())
@@ -129,7 +129,12 @@ export default {
           } else if (data.allowed == false) {
             errorMessage.value = 'Password: Wrong password!';
           } else {
-            context.emit('loginDone', authorize.value.email, data.class);
+            context.emit(
+              'loginDone',
+              authorize.value.email,
+              data.class,
+              data.isAdmin
+            );
           }
           console.log(data);
         })
@@ -160,7 +165,7 @@ export default {
       authorize,
       validateEmail,
       validatePassword,
-      processLoginGetMethod,
+      processLogin,
       processLoginPostMethod,
       errorMessage,
     };
